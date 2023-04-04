@@ -1,0 +1,15 @@
+bertopic==0.14.1
+hdbscan==0.8.29
+matplotlib==3.6.0
+nltk==3.8.1
+numpy==1.22.3
+pandas==1.2.3
+psutil==5.9.1
+scikit_learn==1.2.2
+seaborn==0.11.2
+sentence_transformers==2.2.2
+stopwords==1.0.0
+umap==0.1.1
+umap_learn==0.5.3
+word2number==1.1
+xgboost==1.7.3
