@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import datetime as dt
 import joblib
 import pickle
 import xgboost as xgb
@@ -8,20 +9,21 @@ import time
 from PIL import Image
 from bertopic import BERTopic
 import altair as alt
-
 import sys
 sys.path.append('src')
 from language_processing import *
 
 st.set_page_config(page_title="Movie MetaScore", layout="wide")
-
 sysmenu = '''
 <style>
 #MainMenu {visibility:hidden;}
 footer {visibility:hidden;}
 '''
 st.markdown(sysmenu,unsafe_allow_html=True)
-
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+local_css("style.css")
 @st.cache(suppress_st_warning=True)
 
 def get_fvalue(val):    
@@ -38,12 +40,12 @@ app_mode = st.sidebar.selectbox('Select Page',['Home','Prediction']) #two pages
 
 if app_mode=='Home':    
     
-    st.title('METASCORE PREDICTION :')      
+    st.title('METASCORE PREDICTION')      
     #st.image('loan_image.jpg')    
-    st.markdown('Dataset :')    
+    st.markdown('Example of the dataset used :')    
     data=pd.read_csv('data/processed/df_movies_processed.csv')    
-    st.write(data.head())    
-    st.markdown('User Score VS MetaScore')    
+    st.write(data[['metascore', 'rating', 'release_date', 'title', 'user_score']].head())    
+    st.markdown('MetaScore over Time per Title Topics (determined by BERTopic model)')    
     
     color = alt.Color("metascore:O")
     # We create two selections:
@@ -68,7 +70,7 @@ if app_mode=='Home':
     )
 
     #st.bar_chart(data[['user_score','metascore']].head(20))
-    st.altair_chart(points, theme="streamlit", use_container_width=True)
+    st.altair_chart(points, use_container_width=True)
 
 elif app_mode == 'Prediction':    
     #st.image('slider-short-3.jpg')    
@@ -94,8 +96,11 @@ elif app_mode == 'Prediction':
         feature_dict = {"No":1,"Yes":2}
         ReleaseYear=st.sidebar.slider('Release Year',1990,2050,2000,1)
         ReleaseMonth=st.sidebar.selectbox('Release Month',tuple(months_dict.keys()))
-        ReleaseQuarter=st.sidebar.slider('Release Quarter',1,4,1,1)
-        ReleaseYearWeek=st.sidebar.slider('Release Week Number',1,52,1,1)
+        ReleaseMonth=months_dict.get(ReleaseMonth, ReleaseMonth)
+        ReleaseDay=st.sidebar.slider('Release Day',1,32,1,1)
+        ReleaseDateTime=pd.Timestamp(dt.date(ReleaseYear,ReleaseMonth,ReleaseDay))
+        ReleaseQuarter=ReleaseDateTime.quarter
+        ReleaseYearDay=ReleaseDateTime.dayofyear
         Rating=st.sidebar.selectbox('Box Office Rating',tuple(rating_dict.keys()))
         UserScore=st.sidebar.slider('User Score',0.0,10.0,5.0,0.1)
         Title=st.sidebar.text_input('Movie Title',"Star Wars: The Rise of Skywalker")
@@ -120,12 +125,11 @@ elif app_mode == 'Prediction':
         SummaryStopWordsRatio=SummaryStopCount/len(Summary.split())
 
     if st.button("Predict"):
-        ReleaseMonth=months_dict.get(ReleaseMonth, ReleaseMonth)
         RatingScore=rating_dict.get(Rating, Rating)
         
         data1={'rating':RatingScore, 'user_score':UserScore,    
             'release_year':ReleaseYear, 'release_month':ReleaseMonth,    
-            'release_quarter':ReleaseQuarter, 'release_yearweek':ReleaseYearWeek,    
+            'release_quarter':ReleaseQuarter, 'release_yearday':ReleaseYearDay,    
             'title_len':TitleLength, 'summary_len':SummaryLength,
             'title_avg_wordlength':TitleAvgWordLength, 'summary_avg_wordlength':SummaryAvgWordLength, 
             'title_capcount':TitleCapCount,'summary_capcount':SummaryCapCount, 
@@ -152,7 +156,7 @@ elif app_mode == 'Prediction':
         
         #model = xgb.Booster()
         #model.load_model('models/xgboost_reg_model_metascore.pkl')
-        model = joblib.load('models/random_forest_reg_model_metascore.joblib')
+        model = pickle.load(open('models/random_forest_reg_model_metascore.pkl','rb'))
         #single_sample_dmatrix = xgb.DMatrix(single_sample) 
         #st.text("Data modified")
         prediction = model.predict(single_sample)

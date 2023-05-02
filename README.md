@@ -31,39 +31,55 @@ To use this template, read the [project template setup](https://www.notion.so/Gi
 
 ## Overview
 
-Provide overview of project.Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+This repo is for a training project with the aim of practicing skills using streamlit and docker. 
+The streamlit app uses a random forest model, trained on movie data from MetaCritic, to predict MetaScores (a rating out of 100 given by MetaCritic). The user of the app inputs some basic information about the movie, including title, synopsis, release date, and rating and receives a prediction of the MetaScore. The model includes NLP of the movie title and synopsis, including topic identification. 
 
 ***
 
 ## Technologies
-List the technologies used in the development process inlcuding the programmming languages, cloud environment, orchestration frameworks, model versioning tools and any other technolgies relevant to the project.
+This project used python 3.7 in Visual Studio Code to explore and process data and create a random forest model on movie metascores. A streamlit app was created to run in a docker container.
 
 ***
 
-## Installation
+## Installation and How to Run
 Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+### Step 1
+
+Download repo as .zip folder and extract. Change directory in terminal to extracted folder.
+
+### Step 2
+
+```python
+docker build -t metascore_streamlit_app .
+```
+
+### Step 3
+
+```python
+docker run --name MyContainer -p 8501:8501 metascore_streamlit_app
+```
+
+### Step 4
+
+Open [http://0.0.0.0:8501/](http://0.0.0.0:8501/)
+
+### Step 5
+
+Navigate to ‘Prediction’ using left dropdown menu.
+
+### Step 6
+
+Fill in the information about your movie on the left panel and click predict on the right when ready. The app will display the predicted MetaScore. 
 ***
-
-## FAQs
-List some possible frequentyly asked questions
-***
-
-## Folder Structure
-Add the project structure using the [project-tree](https://marketplace.visualstudio.com/items?itemName=zhucy.project-tree) VScode functionality. 
- ***
-## How to Run
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
 
 ## Authors and acknowledgement
-Show your appreciation to those who have contributed to the project.
+Data obtained from https://www.kaggle.com/datasets/patkle/metacritic-scores-for-games-movies-tv-and-music.
+All code created by Shantelle Smith. 
 
 ***
 ## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+A basic version of a streamlit app has been created with the ability to build and run it in a docker container.
+Future expansions on this project aims to include other data on the movies (e.g. revenue and director names); testing best practices (e.g. using pytest); improved visuals and design (e.g. colour scheme and pictures of searched images); improved capabilities/features; performance improvements to increase the speed of the prediction; remove dependence on user score so a non-existent movie can be used. 
 
 ***

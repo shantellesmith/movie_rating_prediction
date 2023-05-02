@@ -1,0 +1,4 @@
+#exclude the data processing and model building notebooks
+notebooks
+#exclude the raw data
+*/raw

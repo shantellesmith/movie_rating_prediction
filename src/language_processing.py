@@ -1,4 +1,16 @@
 import nltk
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+try:
+    nltk.data.find('tokenizers/stopwords')
+except LookupError:
+    nltk.download('stopwords')
+try:
+    nltk.data.find('tokenizers/wordnet')
+except LookupError:
+    nltk.download('wordnet')
 from sklearn.preprocessing import LabelEncoder
 from word2number import w2n
 from umap import UMAP
